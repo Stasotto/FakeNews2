@@ -1,0 +1,4 @@
+rootProject.name = "Fake News 2"
+include ':app'
+include ':domain'
+include ':data'
