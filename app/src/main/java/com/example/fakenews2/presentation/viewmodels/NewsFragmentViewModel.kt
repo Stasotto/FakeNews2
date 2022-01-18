@@ -4,74 +4,73 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.DeleteNewsFromRoomUseCase
-import com.example.domain.usecase.GetAllNewsFromNewsApiUseCase
-import com.example.domain.usecase.GetAllNewsFromRoomUseCase
-import com.example.domain.usecase.SaveNewsInRoomUseCase
+import com.example.domain.usecase.DeleteNewsFromDatabaseUseCase
+import com.example.domain.usecase.GetAllNewsFromInternetUseCase
+import com.example.domain.usecase.GetAllNewsFromDatabaseUseCase
+import com.example.domain.usecase.SaveNewsToDatabaseUseCase
 import com.example.fakenews2.presentation.models.News
 import com.example.fakenews2.toNews
 import com.example.fakenews2.toNewsDomain
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 // многомодульность решает проблему скорости сборки приложения
 // true story
 
 class NewsFragmentViewModel(
-    private val deleteNewsFromRoomUseCase: DeleteNewsFromRoomUseCase,
-    private val getAllNewsFromRoomUseCase: GetAllNewsFromRoomUseCase,
-    private val getAllNewsFromNewsApiUseCase: GetAllNewsFromNewsApiUseCase,
-    private val saveNewsInRoomUseCase: SaveNewsInRoomUseCase
+    private val deleteNewsFromDatabaseUseCase: DeleteNewsFromDatabaseUseCase,
+    private val getAllNewsFromDatabaseUseCase: GetAllNewsFromDatabaseUseCase,
+    private val getAllNewsFromInternetUseCase: GetAllNewsFromInternetUseCase,
+    private val saveNewsToDatabaseUseCase: SaveNewsToDatabaseUseCase
 ) : ViewModel() {
 
     private val _newsForRecyclerView = MutableLiveData<List<News>>()
     val newsForRecyclerView: LiveData<List<News>> get() = _newsForRecyclerView
 
-    private val newsFromRoom = MutableLiveData<List<News>>()
-    private val newsFromNewsApi = MutableLiveData<List<News>>()
-
-
     init {
         loadNews()
     }
 
+    fun deleteNewsFromDatabase(news: News) {
+        viewModelScope.launch {
+            deleteNewsFromDatabaseUseCase.execute(news.toNewsDomain())
+        }
+    }
+
+    fun saveNewsToDatabase(news: News) {
+        viewModelScope.launch {
+            saveNewsToDatabaseUseCase.execute(news.toNewsDomain())
+        }
+    }
+
     private fun loadNews() {
         viewModelScope.launch {
-            launch { getNewsFromNewsApi() }.join()
-            launch { showSavedNews() }.join()
-            mixeNews()
+            val resultServer = async { getNewsFromInternet() }
+            val  resultDatabase = async { showSavedNews() }
+
+            val res = resultServer.await()
+            val res2 = resultDatabase.await()
+
+            mixeNews(res,res2)
         }
     }
 
-    private suspend fun getNewsFromNewsApi() {
-        newsFromNewsApi.value = getAllNewsFromNewsApiUseCase.execute().map { newsDomain ->
+    private suspend fun getNewsFromInternet(): List<News> {
+        return getAllNewsFromInternetUseCase.execute().map { newsDomain ->
             newsDomain.toNews()
         }
     }
 
-    private suspend fun showSavedNews() {
-        newsFromRoom.value = getAllNewsFromRoomUseCase.execute().map { newsDomain ->
+    private suspend fun showSavedNews(): List<News> {
+        return getAllNewsFromDatabaseUseCase.execute().map { newsDomain ->
             newsDomain.toNews()
         }
     }
 
-    fun deleteNewsFromRoom(news: News) {
-        viewModelScope.launch {
-            deleteNewsFromRoomUseCase.execute(news.toNewsDomain())
-        }
-    }
-
-    fun saveNewsToRoom(news: News) {
-        viewModelScope.launch {
-            saveNewsInRoomUseCase.execute(news.toNewsDomain())
-        }
-    }
-
-    private fun mixeNews() {
-        val newsApiList = newsFromNewsApi.value?.toMutableList() ?: return
-        val newsRoomList = newsFromRoom.value ?: return
-
+    private fun mixeNews(internetNews: List<News>?, databaseNews: List<News>?) {
+        val newsApiList = internetNews?.toMutableList() ?: return
         newsApiList.forEachIndexed { index, newsApi ->
-            newsRoomList.forEach { newsRoom ->
+            databaseNews?.forEach { newsRoom ->
                 if (newsApi.title == newsRoom.title) {
                     newsApiList[index] = newsRoom
                 }

@@ -8,10 +8,10 @@ val appModule = module {
 
     viewModel {
         NewsFragmentViewModel(
-            deleteNewsFromRoomUseCase = get(),
-            getAllNewsFromRoomUseCase = get(),
-            getAllNewsFromNewsApiUseCase = get(),
-            saveNewsInRoomUseCase = get()
+            deleteNewsFromDatabaseUseCase = get(),
+            getAllNewsFromDatabaseUseCase = get(),
+            getAllNewsFromInternetUseCase = get(),
+            saveNewsToDatabaseUseCase = get()
         )
     }
 }

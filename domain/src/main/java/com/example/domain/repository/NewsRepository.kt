@@ -4,11 +4,11 @@ import com.example.domain.models.NewsDomain
 
 interface NewsRepository {
 
-    suspend fun saveInRoomNews(news: NewsDomain)
+    suspend fun saveToDatabase(news: NewsDomain)
 
-    suspend fun getAllFromRoomNews(): List<NewsDomain>
+    suspend fun getAllFromDatabase(): List<NewsDomain>
 
-    suspend fun deleteFromRoomNews(news: NewsDomain)
+    suspend fun deleteFromDatabase(news: NewsDomain)
 
-    suspend fun getAllFromNewsApi(): List<NewsDomain>
+    suspend fun getAllFromInternet(): List<NewsDomain>
 }

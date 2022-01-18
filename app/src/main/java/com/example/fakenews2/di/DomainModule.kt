@@ -2,28 +2,28 @@ package com.example.fakenews2.di
 
 import com.example.data.repository.NewsRepositoryImpl
 import com.example.domain.repository.NewsRepository
-import com.example.domain.usecase.DeleteNewsFromRoomUseCase
-import com.example.domain.usecase.GetAllNewsFromNewsApiUseCase
-import com.example.domain.usecase.GetAllNewsFromRoomUseCase
-import com.example.domain.usecase.SaveNewsInRoomUseCase
+import com.example.domain.usecase.DeleteNewsFromDatabaseUseCase
+import com.example.domain.usecase.GetAllNewsFromInternetUseCase
+import com.example.domain.usecase.GetAllNewsFromDatabaseUseCase
+import com.example.domain.usecase.SaveNewsToDatabaseUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
 
     single {
-        DeleteNewsFromRoomUseCase(newsRepository = get())
+        DeleteNewsFromDatabaseUseCase(newsRepository = get())
     }
 
     single {
-        GetAllNewsFromNewsApiUseCase(newsRepository = get())
+        GetAllNewsFromInternetUseCase(newsRepository = get())
     }
 
     single {
-        GetAllNewsFromRoomUseCase(newsRepository = get())
+        GetAllNewsFromDatabaseUseCase(newsRepository = get())
     }
 
     single {
-        SaveNewsInRoomUseCase(newsRepository = get())
+        SaveNewsToDatabaseUseCase(newsRepository = get())
     }
 
     single<NewsRepository> {

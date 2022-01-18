@@ -14,10 +14,11 @@ object RetrofitClient {
         .setLenient()
         .create()
 
+    fun getNewsApi(): NewsApi = getClient().create(NewsApi::class.java)
+
     private fun getClient(url: String = BASE_URL) = Retrofit.Builder()
         .baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 
-    fun getNewsApi(): NewsApi = getClient().create(NewsApi::class.java)
 }

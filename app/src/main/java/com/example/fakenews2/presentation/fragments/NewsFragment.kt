@@ -22,11 +22,11 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     private val onNewsClickListener: OnNewsClickListener = object : OnNewsClickListener {
 
         override fun onIconDeleteClickListener(news: News) {
-            newsViewModel.deleteNewsFromRoom(news)
+            newsViewModel.deleteNewsFromDatabase(news)
         }
 
         override fun onIconSaveClickListener(news: News) {
-            newsViewModel.saveNewsToRoom(news)
+            newsViewModel.saveNewsToDatabase(news)
         }
     }
 

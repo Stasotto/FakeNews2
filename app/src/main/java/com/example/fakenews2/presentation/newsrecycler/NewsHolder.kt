@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fakenews2.R
 import com.example.fakenews2.databinding.NewsLayoutBinding
 import com.example.fakenews2.presentation.models.News
@@ -24,6 +25,7 @@ class NewsHolder(
 
     fun bind(news: News) = with(binding) {
         title.text = news.title
+        loadImage(news.imageUrl)
         saveIcon.isChecked = news.isSaved
         saveIcon.setOnClickListener {
             if (saveIcon.isChecked) {
@@ -32,6 +34,12 @@ class NewsHolder(
                 onNewsClickListener.onIconDeleteClickListener(news)
             }
         }
+    }
+
+    private fun loadImage(url:String) {
+        Glide.with(binding.subTitle.context)
+            .load(url)
+            .into(binding.subTitle)
     }
 
 }

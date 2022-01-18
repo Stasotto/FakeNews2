@@ -10,17 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class NewsRepositoryImpl(
-    private val newsApiStorage: NewsApiStorage,
+    internal val newsApiStorage: NewsApiStorage,
     private val newsRoomStorage: NewsRoomStorage
 ) : NewsRepository {
 
-    override suspend fun saveInRoomNews(news: NewsDomain) {
+    override suspend fun saveToDatabase(news: NewsDomain) {
         withContext(Dispatchers.IO) {
             newsRoomStorage.save(news.toNewsEntity())
         }
     }
 
-    override suspend fun getAllFromRoomNews(): List<NewsDomain> {
+    override suspend fun getAllFromDatabase(): List<NewsDomain> {
         return withContext(Dispatchers.IO) {
             newsRoomStorage.getAll().map { newsEntity ->
                 newsEntity.toNewsDomain()
@@ -28,13 +28,13 @@ class NewsRepositoryImpl(
         }
     }
 
-    override suspend fun deleteFromRoomNews(news: NewsDomain) {
+    override suspend fun deleteFromDatabase(news: NewsDomain) {
         withContext(Dispatchers.IO) {
             newsRoomStorage.delete(news.toNewsEntity())
         }
     }
 
-    override suspend fun getAllFromNewsApi(): List<NewsDomain> {
+    override suspend fun getAllFromInternet(): List<NewsDomain> {
         return withContext(Dispatchers.IO) {
             newsApiStorage.getAll().map { newsEntity ->
                 newsEntity.toNewsDomain()

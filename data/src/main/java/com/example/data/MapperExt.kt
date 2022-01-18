@@ -6,15 +6,6 @@ import com.example.data.storage.retrofit.dto.NewsResponse
 import com.example.domain.models.NewsDomain
 
 
-fun NewsResponse.toListNewsEntity() = articles.map { article ->
-    article.toNewsEntity()
-}
-
-private fun Article.toNewsEntity() = NewsEntity(
-    title = title.orEmpty(),
-    subtitle = content.orEmpty(),
-    imageUrl = previewUrl.orEmpty()
-)
 
 fun NewsEntity.toNewsDomain() = NewsDomain(
     title = title,
@@ -28,5 +19,14 @@ fun NewsDomain.toNewsEntity() = NewsEntity(
     subtitle = subtitle,
     isSaved = true,
     imageUrl = imageUrl
+)
 
+fun NewsResponse.toListNewsEntity() = articles.map { article ->
+    article.toNewsEntity()
+}
+
+private fun Article.toNewsEntity() = NewsEntity(
+    title = title.orEmpty(),
+    subtitle = content.orEmpty(),
+    imageUrl = previewUrl.orEmpty()
 )
